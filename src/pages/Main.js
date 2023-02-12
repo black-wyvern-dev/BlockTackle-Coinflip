@@ -41,11 +41,24 @@ export default function Main({ props }) {
     ReactGA.set({ page: window.location.pathname }); // Update the user's current page
     ReactGA.pageview(window.location.pathname); // Record a pageview for the given page
     console.log('Page view event sent for GA==>>');
+    handleAction();
   }, []);
 
   useEffect(() => {
     setChipAmount(null);
   }, [token]);
+
+  // Define the cohort based on the date the user first visited your site
+  const cohort = new Date().toISOString().substr(0, 7);
+
+  // Send a cohorted event when a user performs an action
+  function handleAction() {
+    ReactGA.event({
+      category: 'User',
+      action: 'Performed Action',
+      label: cohort,
+    });
+  }
 
   const onFlip = useCallback(
     async (flip) => {
@@ -56,10 +69,10 @@ export default function Main({ props }) {
       if (!chipAmount)
         return toast(<AlertBox text="You need to select a token amount before you can proceed." />);
 
-        const deposit = chipAmount.replace('k', '000');
-        console.log('token', token);
-        console.log('flip', flip);
-        console.log('chipAmount', deposit);
+      const deposit = chipAmount.replace('k', '000');
+      console.log('token', token);
+      console.log('flip', flip);
+      console.log('chipAmount', deposit);
 
       if (token == 'SOL') {
         if (!(await checkBalance(wallet, deposit)))
