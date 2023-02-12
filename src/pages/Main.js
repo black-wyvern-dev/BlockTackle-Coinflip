@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
 import Box from '@mui/material/Box';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -34,6 +35,13 @@ export default function Main({ props }) {
   const [lastFlip, setLastFlip] = useState(0);
   const [state, setState] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (!window) return;
+    ReactGA.set({ page: window.location.pathname }); // Update the user's current page
+    ReactGA.pageview(window.location.pathname); // Record a pageview for the given page
+    console.log('Page view event sent for GA==>>');
+  }, []);
 
   useEffect(() => {
     setChipAmount(null);
