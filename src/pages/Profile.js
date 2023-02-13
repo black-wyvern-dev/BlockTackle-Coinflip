@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import ReactGA from 'react-ga';
 import axios from 'axios';
@@ -12,6 +12,7 @@ import { Pie } from 'react-chartjs-2';
 import MiscStats from '../components/MiscStats';
 import PNL from '../components/PNL';
 import { BACKEND_URL } from '../config';
+import { context } from '../contexts/context';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -59,6 +60,7 @@ export default function Profile({ props }) {
   });
 
   const { publicKey } = useWallet();
+  const { setPageOpenedTimestamp } = useContext(context);
 
   useEffect(() => {
     if (!publicKey) {
@@ -71,13 +73,28 @@ export default function Profile({ props }) {
 
   useEffect(() => {
     gaTriggerNavAction();
+    setPageOpenedTimestamp(Date.now());
+    return () => {
+      setPageOpenedTimestamp((oldDate) => {
+        gaTriggerStayTiming(Date.now() - oldDate);
+      });
+    };
   }, []);
+
+  function gaTriggerStayTiming(duration) {
+    ReactGA.timing({
+      category: 'Time Measurement',
+      variable: 'spentTime',
+      value: duration, // in milliseconds
+      label: 'Stay at profile'
+    });
+  }
 
   function gaTriggerNavAction() {
     ReactGA.event({
       category: 'Navigation',
       action: 'ProfilePageClicked',
-      nonInteraction: true,
+      nonInteraction: true
     });
   }
 

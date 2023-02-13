@@ -1,6 +1,6 @@
 import axios from 'axios';
 import ReactGA from 'react-ga';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
@@ -10,6 +10,7 @@ import TimeSelector from '../components/TimeSelector';
 import PNL from '../components/PNL';
 import Streaks from '../components/Streaks';
 import { BACKEND_URL } from '../config';
+import { context } from '../contexts/context';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -58,18 +59,35 @@ export default function LeaderBoard({ props }) {
     borderWidth: 2
   });
 
+  const { setPageOpenedTimestamp } = useContext(context);
+
   useEffect(() => {
     setLoadingCount(2);
     fetchStatistics();
     fetchStreaks();
     gaTriggerNavAction();
+    setPageOpenedTimestamp(Date.now());
+    return () => {
+      setPageOpenedTimestamp((oldDate) => {
+        gaTriggerStayTiming(Date.now() - oldDate);
+      });
+    };
   }, []);
+
+  function gaTriggerStayTiming(duration) {
+    ReactGA.timing({
+      category: 'Time Measurement',
+      variable: 'spentTime',
+      value: duration, // in milliseconds
+      label: 'Stay at leaderboard'
+    });
+  }
 
   function gaTriggerNavAction() {
     ReactGA.event({
       category: 'Navigation',
       action: 'LeaderboardPageClicked',
-      nonInteraction: true,
+      nonInteraction: true
     });
   }
 

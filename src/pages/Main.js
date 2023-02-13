@@ -30,6 +30,7 @@ export default function Main({ props }) {
   const wallet = useWallet();
   const { token } = useContext(context);
   const { chipAmount, setChipAmount } = useContext(context);
+  const { setPageOpenedTimestamp } = useContext(context);
   const [playing, setPlaying] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [lastFlip, setLastFlip] = useState(0);
@@ -41,31 +42,46 @@ export default function Main({ props }) {
     ReactGA.set({ page: window.location.pathname }); // Update the user's current page
     ReactGA.pageview(window.location.pathname); // Record a pageview for the given page
     gaTriggerNavAction();
+    setPageOpenedTimestamp(Date.now());
+    return () => {
+      setPageOpenedTimestamp((oldDate) => {
+        gaTriggerStayTiming(Date.now() - oldDate);
+      });
+    };
   }, []);
 
   useEffect(() => {
     setChipAmount(null);
   }, [token]);
 
+  function gaTriggerStayTiming(duration) {
+    ReactGA.timing({
+      category: 'Time Measurement',
+      variable: 'spentTime',
+      value: duration, // in milliseconds
+      label: 'Stay at homepage'
+    });
+  }
+
   function gaTriggerNavAction() {
     ReactGA.event({
       category: 'Navigation',
       action: 'HomePageClicked',
-      nonInteraction: true,
+      nonInteraction: true
     });
   }
 
   function gaTriggerKickflipAction() {
     ReactGA.event({
       category: 'Game Playing',
-      action: 'KickflipClicked',
+      action: 'KickflipClicked'
     });
   }
 
   function gaTriggerWipeoutAction() {
     ReactGA.event({
       category: 'Game Playing',
-      action: 'WipeoutedClicked',
+      action: 'WipeoutedClicked'
     });
   }
 

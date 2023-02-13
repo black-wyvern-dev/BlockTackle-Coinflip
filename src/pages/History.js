@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import { useWallet } from '@solana/wallet-adapter-react';
 import axios from 'axios';
@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 
 import HistoryFlip from '../components/HistoryFlip';
 import HistoryTab from '../components/HistoryTab';
+import { context } from '../contexts/context';
 import { BACKEND_URL } from '../config';
 
 export default function LeaderBoard({ props }) {
@@ -13,21 +14,37 @@ export default function LeaderBoard({ props }) {
   const [roundData, setRoundData] = useState([]);
   const [myRounds, setMyRounds] = useState([]);
   const [recentLoading, setRecentLoading] = useState(true);
-  const [myLoading, setMyLoading] = useState(true);
+  const [myLoading, setMyLoading] = useState(true);s
 
   const wallet = useWallet();
+  const { setPageOpenedTimestamp } = useContext(context);
 
   useEffect(() => {
     setRecentLoading(true);
     fetchHistory();
     gaTriggerNavAction();
+    setPageOpenedTimestamp(Date.now());
+    return () => {
+      setPageOpenedTimestamp((oldDate) => {
+        gaTriggerStayTiming(Date.now() - oldDate);
+      });
+    };
   }, []);
+
+  function gaTriggerStayTiming(duration) {
+    ReactGA.timing({
+      category: 'Time Measurement',
+      variable: 'spentTime',
+      value: duration, // in milliseconds
+      label: 'Stay at history'
+    });
+  }
 
   function gaTriggerNavAction() {
     ReactGA.event({
       category: 'Navigation',
       action: 'HistoryPageClicked',
-      nonInteraction: true,
+      nonInteraction: true
     });
   }
 
