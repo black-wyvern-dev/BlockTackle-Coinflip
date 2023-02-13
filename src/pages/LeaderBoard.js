@@ -1,4 +1,5 @@
 import axios from 'axios';
+import ReactGA from 'react-ga';
 import { useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -61,7 +62,16 @@ export default function LeaderBoard({ props }) {
     setLoadingCount(2);
     fetchStatistics();
     fetchStreaks();
+    gaTriggerNavAction();
   }, []);
+
+  function gaTriggerNavAction() {
+    ReactGA.event({
+      category: 'Navigation',
+      action: 'LeaderboardPageClicked',
+      nonInteraction: true,
+    });
+  }
 
   const fetchStreaks = () => {
     axios

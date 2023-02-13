@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -14,6 +15,20 @@ const Nav = (props) => {
   useEffect(() => {
     setIsOpen(false);
   }, []);
+
+  function gaTriggerNavAction() {
+    ReactGA.event({
+      category: 'Navigation',
+      action: 'FaqPageClicked',
+      nonInteraction: true,
+    });
+  }
+
+  const handleFaqClicked = () => {
+    gaTriggerNavAction();
+    props.showModal();
+  };
+
   return (
     <>
       <div className="top_menu">
@@ -49,7 +64,7 @@ const Nav = (props) => {
             </Link>
           </Box>
           <Box sx={menuStyle}>
-            <Link className="text-white" to="#" onClick={() => props.showModal()}>
+            <Link className="text-white" to="#" onClick={handleFaqClicked}>
               FAQ
             </Link>
           </Box>
@@ -102,7 +117,7 @@ const Nav = (props) => {
               </Link>
             </Box>
             <Box>
-              <Link className="text-white" to="#" onClick={() => props.showModal()}>
+              <Link className="text-white" to="#" onClick={handleFaqClicked}>
                 FAQ
               </Link>
             </Box>

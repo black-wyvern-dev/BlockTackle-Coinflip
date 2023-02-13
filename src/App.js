@@ -14,7 +14,6 @@ export default function App() {
   const TRACKING_ID = "G-V9J2GN1NKX";
   useEffect(() => {
     ReactGA.initialize(TRACKING_ID);
-    console.log('==> Google Analytics are initialized', TRACKING_ID);
   }, []);
 
   return (

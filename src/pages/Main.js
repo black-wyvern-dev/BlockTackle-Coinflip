@@ -40,23 +40,32 @@ export default function Main({ props }) {
     if (!window) return;
     ReactGA.set({ page: window.location.pathname }); // Update the user's current page
     ReactGA.pageview(window.location.pathname); // Record a pageview for the given page
-    console.log('Page view event sent for GA==>>');
-    handleAction();
+    gaTriggerNavAction();
   }, []);
 
   useEffect(() => {
     setChipAmount(null);
   }, [token]);
 
-  // Define the cohort based on the date the user first visited your site
-  const cohort = new Date().toISOString().substr(0, 7);
-
-  // Send a cohorted event when a user performs an action
-  function handleAction() {
+  function gaTriggerNavAction() {
     ReactGA.event({
-      category: 'User',
-      action: 'Performed Action',
-      label: cohort,
+      category: 'Navigation',
+      action: 'HomePageClicked',
+      nonInteraction: true,
+    });
+  }
+
+  function gaTriggerKickflipAction() {
+    ReactGA.event({
+      category: 'Game Playing',
+      action: 'KickflipClicked',
+    });
+  }
+
+  function gaTriggerWipeoutAction() {
+    ReactGA.event({
+      category: 'Game Playing',
+      action: 'WipeoutedClicked',
     });
   }
 
@@ -93,6 +102,9 @@ export default function Main({ props }) {
       setState('processing');
       setPlaying(true);
       setShowOverlay(true);
+
+      if (flip) gaTriggerWipeoutAction();
+      else gaTriggerKickflipAction();
 
       if (token == 'SOL')
         await playGame(

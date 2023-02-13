@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
 import { useWallet } from '@solana/wallet-adapter-react';
 import axios from 'axios';
 import Box from '@mui/material/Box';
@@ -19,7 +20,16 @@ export default function LeaderBoard({ props }) {
   useEffect(() => {
     setRecentLoading(true);
     fetchHistory();
+    gaTriggerNavAction();
   }, []);
+
+  function gaTriggerNavAction() {
+    ReactGA.event({
+      category: 'Navigation',
+      action: 'HistoryPageClicked',
+      nonInteraction: true,
+    });
+  }
 
   useEffect(() => {
     if (!wallet.publicKey) {

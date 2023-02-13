@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
+import ReactGA from 'react-ga';
 import axios from 'axios';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -67,6 +68,18 @@ export default function Profile({ props }) {
     setLoading(true);
     fetchProfile();
   }, [publicKey]);
+
+  useEffect(() => {
+    gaTriggerNavAction();
+  }, []);
+
+  function gaTriggerNavAction() {
+    ReactGA.event({
+      category: 'Navigation',
+      action: 'ProfilePageClicked',
+      nonInteraction: true,
+    });
+  }
 
   const fetchProfile = () => {
     axios
