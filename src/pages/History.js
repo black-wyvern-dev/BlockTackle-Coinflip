@@ -14,7 +14,7 @@ export default function LeaderBoard({ props }) {
   const [roundData, setRoundData] = useState([]);
   const [myRounds, setMyRounds] = useState([]);
   const [recentLoading, setRecentLoading] = useState(true);
-  const [myLoading, setMyLoading] = useState(true);s
+  const [myLoading, setMyLoading] = useState(true);
 
   const wallet = useWallet();
   const { setPageOpenedTimestamp } = useContext(context);
